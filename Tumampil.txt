@@ -1,0 +1,1 @@
+"This is a written note to execute push and pull on GitBash"
