@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Details</title>
+    <link rel="stylesheet" href="booking.css">
+</head>
+<body>
+    <div class="movie-container">
+        <!-- The selected movie image will appear here -->
+        <img id="selectedImage" alt="Movie Image" style="max-width: 100%; height: auto;">
+        <div class="movie-details">
+            <h1 id="movieTitle"></h1>
+            <p id="movieDescription"></p>
+            <p><strong>Genre:</strong> <span id="movieGenre"></span></p>
+            <p><strong>Duration:</strong> <span id="movieDuration"></span></p>
+            <button id="bookNow" onclick="redirectToBooking()">Book Now</button>
+        </div>
+    </div>
+
+    <div class="background-video">
+        <video autoplay muted loop id="backgroundVideo">
+            <source id="videoSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script src="booking.js"></script>
+</body>
+</html>

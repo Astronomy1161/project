@@ -1,0 +1,133 @@
+/* Body Styles */
+body {
+  background: url(drick.jpg) no-repeat;
+  background-size: cover;
+  padding-top: 100px;
+}
+
+/* Header */
+h1 {
+  text-decoration: none;
+  margin: 20px;
+  font-size: 18px;
+  position: fixed;
+  top: 16px;
+  left: 100px;
+  color: white;
+}
+
+/* Button */
+button {
+  color: solid antiquewhite;
+  font-size: 18px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 20px;
+  background-color: greenyellow;
+  border-radius: 20px;
+  border: solid white 1px;
+  height: 50px;
+  width: 80px;
+}
+
+/* Gallery Styles */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 columns */
+  grid-template-rows: repeat(2, 300px); /* 2 rows, each 300px height */
+  gap: 20px;
+  justify-content: center;
+  margin: 0 20px; /* Add some margin around the gallery */
+}
+
+/* Individual Movie Styles */
+.movie {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  border-radius: 8px; /* Optional: Adds rounded corners */
+}
+
+/* Image inside Movie */
+.movie img {
+  width: 180px;
+  height: 270px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* Zoom effect on hover */
+.movie:hover img {
+  transform: scale(1.1); /* This will zoom in the image */
+}
+
+/* Overlay Styles */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease, visibility 0s 0.3s;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+/* Show overlay on hover */
+.movie:hover .overlay {
+  opacity: 1; /* This will show the overlay on hover */
+}
+
+/* Overlay text styles */
+.overlay h3, .overlay p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+/* Movie title */
+.overlay h3 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Movie details (e.g., genre, duration, summary) */
+.overlay p {
+  font-size: 14px;
+}
+footer {
+
+  background-color: red;
+
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+footer {
+  margin: 10px 0;
+}
+
+footer a {
+  color: white;
+  margin: 0 10px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}

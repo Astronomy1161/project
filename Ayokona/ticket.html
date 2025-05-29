@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ticket</title>
+    <link rel="stylesheet" href="ticket.css">
+</head>
+<body>
+    <div class="ticket-container">
+        <h1>Your Ticket</h1>
+
+        <div class="ticket-details">
+            <p><strong>Movie Title:</strong> <span id="movieTitle"></span></p>
+            <p><strong>Selected Seats:</strong> <span id="selectedSeats"></span></p>
+            <p><strong>Date:</strong> <span id="selectedDate"></span></p>
+            <p><strong>Time:</strong> <span id="selectedTime"></span></p>
+        </div>
+
+        <div class="ticket-footer">
+            <button onclick="window.print()">Print Ticket</button>
+        </div>
+    </div>
+
+    <script src="ticket.js"></script>
+</body>
+</html>
