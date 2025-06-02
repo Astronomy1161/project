@@ -1,0 +1,102 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+nav button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  background-color: greenyellow;
+  color: black;
+  font-size: 16px;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 20px;
+  cursor: pointer;
+  z-index: 100;
+}
+.details-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  min-height: 20vh;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  backdrop-filter: blur(10px); /* the blur effect */
+  -webkit-backdrop-filter: blur(10px);
+}
+.poster img {
+  width: 600px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+  margin-right: 30px;
+}
+.movie-details {
+  max-width: 300px;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  padding: 30px;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+}
+
+.movie-details h1 {
+  margin-top: 0;
+  font-size: 36px;
+}
+
+.movie-details .genre,
+.movie-details p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.movie-details h3 {
+  margin-top: 20px;
+  font-size: 24px;
+}
+
+footer {
+  text-align: center;
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  color: white;
+}
+/* Arrow style for Back to Dashboard button */
+nav button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+/* Left-pointing arrow */
+nav button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%) rotate(135deg);
+  border: solid white;
+  border-width: 0 4px 4px 0;
+  display: inline-block;
+  padding: 8px;
+}
+
+/* Hover effect */
+nav button:hover::before {
+  border-color: yellow;
+}
