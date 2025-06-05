@@ -1,5 +1,4 @@
 <?php
-// Database connection
 $conn = new mysqli("localhost", "root", "", "system", 3306, "/data/data/com.termux/files/usr/var/run/mysqld.sock");
 if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
@@ -7,9 +6,7 @@ if ($conn->connect_error) {
 
 $message = "";
 
-// Handle form submission to add a new movie
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['movie_Id']) && !isset($_POST['update_status'])) {
-  $movie_Id = $_POST['movie_Id'];
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_status'])) {
   $Title = $_POST['Title'];
   $Genre = $_POST['Genre'];
   $Overview = $_POST['Overview'];
@@ -19,9 +16,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['movie_Id']) && !isset(
   $target_file = $target_dir . basename($movie_image);
 
   if (move_uploaded_file($_FILES["movie_image"]["tmp_name"], $target_file)) {
-    $sql = "INSERT INTO movie (movie_Id, Movie, Title, Genre, Overview) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO movie (Movie, Title, Genre, Overview) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssss", $movie_Id, $movie_image, $Title, $Genre, $Overview);
+    $stmt->bind_param("ssss", $movie_image, $Title, $Genre, $Overview);
     if ($stmt->execute()) {
       $message = "New movie added successfully!";
     } else {
@@ -33,7 +30,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['movie_Id']) && !isset(
   }
 }
 
-// Handle status update
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
   $movie_Id = $_POST['movie_Id'];
   $new_status = $_POST['new_status'];
@@ -54,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 <head>
   <meta charset="UTF-8" />
   <title>ANIMAPLEX Dashboard</title>
-  <link rel="stylesheet" href="admindash.css">
+  <link rel="stylesheet" href="admindash.css" />
 </head>
 <body>
 
@@ -65,20 +61,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
     <a data-section="messages">Messages</a>
     <a data-section="users">Users</a>
     <a data-section="movies">Movies</a>
+    <a href="login.php" class="logout-button">Logout</a>
   </nav>
 </div>
 
 <div class="main">
 
-<!-- Orders Section -->
 <div id="orders">
   <h1>Orders</h1>
+  <input type="text" class="section-search" placeholder="Search orders...">
   <table>
     <thead>
       <tr>
         <th>Order ID</th>
         <th>Username</th>
-        <th>Ticket Code</th> <!-- Added header -->
+        <th>Ticket Code</th>
         <th>Movie Title</th>
         <th>Booking Date</th>
         <th>Booking Time</th>
@@ -97,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
           echo "<tr>";
           echo "<td>#".$row['orderid']."</td>";
           echo "<td>".htmlspecialchars($row['username'])."</td>";
-          echo "<td>".htmlspecialchars($row['ticket_code'])."</td>";  // Display ticket_code here
+          echo "<td>".htmlspecialchars($row['ticket_code'])."</td>";
           echo "<td>".htmlspecialchars($row['title'])."</td>";
           echo "<td>".htmlspecialchars($row['booking_date'])."</td>";
           echo "<td>".htmlspecialchars($row['booking_time'])."</td>";
@@ -105,30 +102,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
           echo "<td>".htmlspecialchars($row['tickets'])."</td>";
           echo "<td>".htmlspecialchars($row['status'])."</td>";
           echo "<td>₱".number_format($row['totalprice'], 2)."</td>";
-          echo "<td>
-                  <div class='dropdown'>
-                    <button>⋮</button>
-                    <div class='dropdown-content'>
-                      <a href='#'>Confirm</a>
-                      <a href='#'>Cancel</a>
-                      <a href='#'>Details</a>
-                    </div>
-                  </div>
-                </td>";
           echo "</tr>";
         }
       } else {
-        echo "<tr><td colspan='11'>No orders found.</td></tr>";
+        echo "<tr><td colspan='10'>No orders found.</td></tr>";
       }
       ?>
     </tbody>
   </table>
 </div>
 
-<div id="messages" class="hidden"><h1>Messages</h1></div>
+<div id="messages" class="hidden">
+  <h1>Messages</h1>
+  <input type="text" class="section-search" placeholder="Search messages...">
+  <table>
+    <thead>
+      <tr>
+        <th>Message ID</th>
+        <th>Username</th>
+        <th>Message</th>
+        <th>Sent At</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php
+      $sql = "SELECT * FROM messages ORDER BY created_at DESC";
+      $result = $conn->query($sql);
+      if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+          echo "<tr>";
+          echo "<td>#".htmlspecialchars($row['id'])."</td>";
+          echo "<td>".htmlspecialchars($row['username'])."</td>";
+          echo "<td>".nl2br(htmlspecialchars($row['message']))."</td>";
+          echo "<td>".htmlspecialchars($row['created_at'])."</td>";
+          echo "</tr>";
+        }
+      } else {
+        echo "<tr><td colspan='4'>No messages found.</td></tr>";
+      }
+      ?>
+    </tbody>
+  </table>
+</div>
 
 <div id="users" class="hidden">
   <h1>Users</h1>
+  <input type="text" class="section-search" placeholder="Search users...">
   <table>
     <thead><tr><th>User ID</th><th>Username</th><th>Password</th></tr></thead>
     <tbody>
@@ -148,8 +167,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 <div id="movies" class="hidden">
   <h1>Movies</h1>
   <?php if ($message): ?><div class="message"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
+  <input type="text" class="section-search" placeholder="Search movies...">
   <form method="POST" enctype="multipart/form-data">
-    <label>Movie ID:</label><input type="text" name="movie_Id" required>
     <label>Title:</label><input type="text" name="Title" required>
     <label>Genre:</label><input type="text" name="Genre" required>
     <label>Overview:</label><textarea name="Overview" required></textarea>
@@ -166,8 +185,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
               <img src='uploads/".htmlspecialchars($row['Movie'])."' alt='".htmlspecialchars($row['Title'])."'>
               <div class='poster-title'>".htmlspecialchars($row['Title'])."</div>
               <div class='poster-genre'>".htmlspecialchars($row['Genre'])."</div>
-              
-              <form method='POST' style='margin-top:10px;'>
+              <form method='POST' style='margin-top:10px; display:flex; gap:10px; align-items:center;'>
                 <input type='hidden' name='movie_Id' value='".htmlspecialchars($row['movie_Id'])."'>
                 <select name='new_status'>
                   <option value='Coming Soon'".($row['status']=='Coming Soon'?' selected':'').">Coming Soon</option>
@@ -184,18 +202,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 
 </div>
 
-<script>
-const links = document.querySelectorAll('.sidebar nav a');
-const sections = document.querySelectorAll('.main > div');
-links.forEach(link => {
-  link.addEventListener('click', () => {
-    links.forEach(l => l.classList.remove('active'));
-    link.classList.add('active');
-    sections.forEach(sec => sec.classList.add('hidden'));
-    document.getElementById(link.getAttribute('data-section')).classList.remove('hidden');
-  });
-});
-</script>
-
+<script src="admindash.js"></script>
 </body>
 </html>

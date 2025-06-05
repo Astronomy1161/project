@@ -84,3 +84,8 @@ nav button {
 .seat:hover {
     background-color: #4CAF50;
 }
+.disabled-seat {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}

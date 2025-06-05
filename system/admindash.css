@@ -164,3 +164,18 @@ body {
       margin-bottom: 20px;
       font-weight: 600;
       color: green;
+}
+.logout-button {
+  display: block;
+  margin: 20px;
+  padding: 10px;
+  background-color: #d9534f;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+.logout-button:hover {
+  background-color: #c9302c;
+}
