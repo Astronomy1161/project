@@ -1,16 +1,14 @@
 body {
-  background: url(bg.jpg) no-repeat;
-  background-size: cover;
+  background: #111;
   padding-top: 100px;
-  color: white;
+  color: #f0f0f0;
   font-family: Arial, sans-serif;
 }
 
 body, h1, h2, h3, p, a, button {
-  color: white !important;
+  color: #f0f0f0 !important;
 }
 
-/* Header */
 h1 {
   text-decoration: none;
   margin: 20px;
@@ -18,24 +16,28 @@ h1 {
   position: fixed;
   top: 16px;
   left: 100px;
+  color: #ff6f00 !important;
 }
 
-/* Button */
 button {
   font-size: 18px;
   position: fixed;
   top: 0;
   left: 0;
   margin: 20px;
-  background-color: greenyellow;
+  background-color: #ff6f00;
   border-radius: 20px;
-  border: solid white 1px;
+  border: none;
   height: 50px;
   width: 80px;
   cursor: pointer;
+  color: #fff;
 }
 
-/* Gallery Styles */
+button:hover {
+  background-color: #ff8f00;
+}
+
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -44,7 +46,6 @@ button {
   margin: 20px;
 }
 
-/* Individual Movie Styles */
 .movie {
   position: relative;
   width: 100%;
@@ -52,9 +53,9 @@ button {
   overflow: hidden;
   cursor: pointer;
   border-radius: 8px;
+  box-shadow: 0 0 10px #000;
 }
 
-/* Image inside Movie */
 .movie img {
   width: 100%;
   height: 100%;
@@ -62,19 +63,17 @@ button {
   transition: transform 0.3s ease;
 }
 
-/* Zoom effect on hover */
 .movie:hover img {
   transform: scale(1.1);
 }
 
-/* Overlay Styles */
 .overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   opacity: 0;
   transition: opacity 0.3s ease;
   display: flex;
@@ -92,19 +91,20 @@ button {
 
 .overlay h3 {
   margin: 10px 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  color: #ff6f00;
 }
 
 .overlay p {
   margin: 10px 0;
   font-size: 14px;
+  color: #ddd;
 }
 
-/* Footer */
 footer {
-  background-color: red;
-  color: white;
+  background-color: #222;
+  color: #f0f0f0;
   text-align: center;
   padding: 15px 0;
   position: relative;
@@ -113,8 +113,12 @@ footer {
 }
 
 footer a {
-  color: white;
+  color: #ff6f00;
   margin: 0 10px;
   text-decoration: none;
   font-weight: bold;
+}
+
+footer a:hover {
+  text-decoration: underline;
 }

@@ -1,0 +1,108 @@
+/* Reset some basic styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Body and background */
+body {
+  background-color: #f5f5f5;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Navigation bar */
+nav {
+  background-color: #222;
+  padding: 15px 30px;
+  margin-bottom: 30px;
+}
+
+nav ul.links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+nav ul.links li a,
+nav ul.links b {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+nav ul.links li a:hover,
+nav ul.links li a.active {
+  color: #ff6f61;
+}
+
+/* About section */
+.about-section {
+  background-color: #fff;
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+  padding: 30px 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+}
+
+.about-section h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.about-section h2 {
+  font-size: 24px;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+.about-section p {
+  font-size: 18px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.about-section ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  color: #555;
+  font-size: 18px;
+}
+
+.about-section ul li {
+  margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px 0;
+  border-top: 1px solid #ddd;
+  background-color: #222;
+  color: #fff;
+}
+
+footer .footer-links {
+  margin-top: 10px;
+}
+
+footer .footer-links a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 10px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+footer .footer-links a:hover {
+  color: #ff6f61;
+}

@@ -89,10 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
 <div class="footer">
-  <p>&copy; 2025 ANIMAPLEX</p>
-  <div class="footer-links">
-    <a href="#">Movies</a>
-    <a href="#">About Us</a>
+  <p>&copy; 2025 ANIMAPLEX. All Rights Reserve</p>
   </div>
 </div>
 

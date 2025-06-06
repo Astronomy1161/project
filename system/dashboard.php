@@ -28,7 +28,14 @@ $result_coming_soon = $conn->query($sql_coming_soon);
 <body>
 
 <nav>
-  <a href="login.php"><button type="button">Log out</button></a>
+  <div class="dropdown">
+    <button class="dropbtn">&#9776;</button> <!-- Hamburger icon -->
+    <div class="dropdown-content">
+      <a href="usero.php?username=<?php echo urlencode($_SESSION["username"]); ?>">My Orders</a>
+      <a href="login.php">Log Out</a>
+      <a href="message.php">Contact Us</a>
+    </div>
+  </div>
 </nav>
 
 <h1>Welcome, <?php echo htmlspecialchars($_SESSION["username"]); ?>!</h1>
@@ -72,13 +79,7 @@ $result_coming_soon = $conn->query($sql_coming_soon);
 </div>
 
 <footer>
-  <p>&copy; 2025 CINEMAPLEX</p>
-  <div class="footer-links">
-    <a href="#">Movies</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact Us</a>
-  </div>
+  <p>&copy; 2025 ANIMAPLEX. All Rights Reserved</p>
 </footer>
-
 </body>
 </html>

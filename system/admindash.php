@@ -51,6 +51,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
   <meta charset="UTF-8" />
   <title>ANIMAPLEX Dashboard</title>
   <link rel="stylesheet" href="admindash.css" />
+  <style>
+    /* You can keep your existing CSS file admindash.css and add the below if needed */
+    /* Or just keep your current CSS as you shared previously */
+  </style>
 </head>
 <body>
 
@@ -166,15 +170,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 
 <div id="movies" class="hidden">
   <h1>Movies</h1>
-  <?php if ($message): ?><div class="message"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
-  <input type="text" class="section-search" placeholder="Search movies...">
-  <form method="POST" enctype="multipart/form-data">
-    <label>Title:</label><input type="text" name="Title" required>
-    <label>Genre:</label><input type="text" name="Genre" required>
-    <label>Overview:</label><textarea name="Overview" required></textarea>
-    <label>Poster Image:</label><input type="file" name="movie_image" accept="image/*" required>
-    <button type="submit">Add Movie</button>
-  </form>
+  <?php if ($message): ?>
+    <div class="message"><?php echo htmlspecialchars($message); ?></div>
+  <?php endif; ?>
+
+  <button id="toggleAddMovieBtn" style="margin-bottom: 15px; padding: 10px 15px; background:orange; color:black; border:none; border-radius:4px; cursor:pointer;">
+    ➕ Add Movie
+  </button>
+
+  <div id="addMovieFormContainer" class="hidden">
+    <form method="POST" enctype="multipart/form-data">
+      <label>Title:</label><input type="text" name="Title" required>
+      <label>Genre:</label><input type="text" name="Genre" required>
+      <label>Overview:</label><textarea name="Overview" required></textarea>
+      <label>Poster Image:</label><input type="file" name="movie_image" accept="image/*" required>
+      <button type="submit">Add Movie</button>
+    </form>
+  </div>
+
   <?php
     $sql = "SELECT * FROM movie";
     $result = $conn->query($sql);
@@ -182,26 +195,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
       echo "<div class='gallery'>";
       while ($row = $result->fetch_assoc()) {
         echo "<div class='poster-card'>
-              <img src='uploads/".htmlspecialchars($row['Movie'])."' alt='".htmlspecialchars($row['Title'])."'>
-              <div class='poster-title'>".htmlspecialchars($row['Title'])."</div>
-              <div class='poster-genre'>".htmlspecialchars($row['Genre'])."</div>
-              <form method='POST' style='margin-top:10px; display:flex; gap:10px; align-items:center;'>
-                <input type='hidden' name='movie_Id' value='".htmlspecialchars($row['movie_Id'])."'>
-                <select name='new_status'>
-                  <option value='Coming Soon'".($row['status']=='Coming Soon'?' selected':'').">Coming Soon</option>
-                  <option value='Now Showing'".($row['status']=='Now Showing'?' selected':'').">Now Showing</option>
-                </select>
-                <button type='submit' name='update_status'>Update</button>
-              </form>
+                <img src='uploads/".htmlspecialchars($row['Movie'])."' alt='".htmlspecialchars($row['Title'])."'>
+                <div class='poster-title'>".htmlspecialchars($row['Title'])."</div>
+                <div class='poster-genre'>".htmlspecialchars($row['Genre'])."</div>
+                <form method='POST' style='margin-top:10px; display:flex; gap:10px; align-items:center;'>
+                  <input type='hidden' name='movie_Id' value='".htmlspecialchars($row['movie_Id'])."'>
+                  <select name='new_status'>
+                    <option value='Coming Soon'".($row['status']=='Coming Soon'?' selected':'').">Coming Soon</option>
+                    <option value='Now Showing'".($row['status']=='Now Showing'?' selected':'').">Now Showing</option>
+                  </select>
+                  <button type='submit' name='update_status'>Update</button>
+                </form>
               </div>";
       }
       echo "</div>";
-    } else { echo "<p>No movies found.</p>"; }
+    } else {
+      echo "<p>No movies found.</p>";
+    }
   ?>
 </div>
 
 </div>
 
-<script src="admindash.js"></script>
+<script>
+document.querySelectorAll('.sidebar nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    // Remove active from all links
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+    // Add active to clicked link
+    link.classList.add('active');
+    // Hide all sections
+    document.querySelectorAll('.main > div').forEach(div => div.classList.add('hidden'));
+    // Show selected section
+    const section = link.getAttribute('data-section');
+    if(section){
+      document.getElementById(section).classList.remove('hidden');
+    }
+  });
+});
+
+document.getElementById('toggleAddMovieBtn').addEventListener('click', () => {
+  const formContainer = document.getElementById('addMovieFormContainer');
+  formContainer.classList.toggle('hidden');
+});
+</script>
+
 </body>
 </html>

@@ -97,7 +97,7 @@ $conn->close();
             </div>
 
             <div class="input-box">
-                <input type="date" name="birthday" placeholder="Birthday" required />
+                <input type="date" name="birthday"  placeholder="Birthday" required />
                 <i class="bx bxs-calendar"></i>
             </div>
 
