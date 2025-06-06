@@ -19,7 +19,6 @@ h1 {
   color: #ff6f00 !important;
 }
 
-/* Main button styles (if needed elsewhere) */
 button {
   font-size: 18px;
   position: fixed;
@@ -39,7 +38,6 @@ button:hover {
   background-color: #ff8f00;
 }
 
-/* Dropdown styles */
 .dropdown {
   position: fixed;
   top: 70px;
@@ -94,7 +92,6 @@ button:hover {
   background-color: #ff8f00;
 }
 
-/* Gallery Styles */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -159,7 +156,6 @@ button:hover {
   color: #ddd;
 }
 
-/* Footer */
 footer {
   background-color: #222;
   color: #f0f0f0;
