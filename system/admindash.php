@@ -6,42 +6,87 @@ if ($conn->connect_error) {
 
 $message = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !isset($_POST['update_status'])) {
-  $Title = $_POST['Title'];
-  $Genre = $_POST['Genre'];
-  $Overview = $_POST['Overview'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  $movie_image = $_FILES['movie_image']['name'];
-  $target_dir = "uploads/";
-  $target_file = $target_dir . basename($movie_image);
+  // ADD MOVIE
+  if (!isset($_POST['update_status']) && !isset($_POST['delete_cancelled']) && !isset($_POST['delete_movie'])) {
+    $Title = $_POST['Title'] ?? '';
+    $Genre = $_POST['Genre'] ?? '';
+    $Overview = $_POST['Overview'] ?? '';
 
-  if (move_uploaded_file($_FILES["movie_image"]["tmp_name"], $target_file)) {
-    $sql = "INSERT INTO movie (Movie, Title, Genre, Overview) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $movie_image, $Title, $Genre, $Overview);
-    if ($stmt->execute()) {
-      $message = "New movie added successfully!";
+    if (isset($_FILES['movie_image']) && $_FILES['movie_image']['error'] === UPLOAD_ERR_OK) {
+      $movie_image = $_FILES['movie_image']['name'];
+      $target_dir = "uploads/";
+      $target_file = $target_dir . basename($movie_image);
+
+      if (move_uploaded_file($_FILES["movie_image"]["tmp_name"], $target_file)) {
+        $sql = "INSERT INTO movie (Movie, Title, Genre, Overview) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $movie_image, $Title, $Genre, $Overview);
+        if ($stmt->execute()) {
+          $message = "New movie added successfully!";
+        } else {
+          $message = "Error: " . $stmt->error;
+        }
+        $stmt->close();
+      } else {
+        $message = "Error uploading movie image.";
+      }
     } else {
-      $message = "Error: " . $stmt->error;
+      $message = "Please upload a movie image.";
     }
-    $stmt->close();
-  } else {
-    $message = "Error uploading movie image.";
   }
-}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
-  $movie_Id = $_POST['movie_Id'];
-  $new_status = $_POST['new_status'];
-  $sql = "UPDATE movie SET status = ? WHERE movie_Id = ?";
-  $stmt = $conn->prepare($sql);
-  $stmt->bind_param("ss", $new_status, $movie_Id);
-  if ($stmt->execute()) {
-    $message = "Status updated successfully!";
-  } else {
-    $message = "Error updating status: " . $stmt->error;
+  // UPDATE MOVIE STATUS
+  if (isset($_POST['update_status'])) {
+    $movie_Id = $_POST['movie_Id'] ?? '';
+    $new_status = $_POST['new_status'] ?? '';
+    if ($movie_Id && $new_status) {
+      $sql = "UPDATE movie SET status = ? WHERE movie_Id = ?";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("ss", $new_status, $movie_Id);
+      if ($stmt->execute()) {
+        $message = "Status updated successfully!";
+      } else {
+        $message = "Error updating status: " . $stmt->error;
+      }
+      $stmt->close();
+    }
   }
-  $stmt->close();
+
+  // DELETE CANCELLED ORDERS
+  if (isset($_POST['delete_cancelled'])) {
+    $sql = "DELETE FROM orders WHERE status = 'cancelled'";
+    if ($conn->query($sql) === TRUE) {
+      $message = "All cancelled orders have been deleted successfully!";
+    } else {
+      $message = "Error deleting cancelled orders: " . $conn->error;
+    }
+  }
+
+  // DELETE MOVIE
+  if (isset($_POST['delete_movie'])) {
+    $movie_Id = intval($_POST['movie_Id'] ?? 0);
+
+    if ($movie_Id > 0) {
+      // Fetch image file to delete
+      $movie_query = $conn->query("SELECT Movie FROM movie WHERE movie_Id = $movie_Id");
+      if ($movie_query && $movie_row = $movie_query->fetch_assoc()) {
+        $movie_image_path = "uploads/" . $movie_row['Movie'];
+        if (file_exists($movie_image_path)) {
+          unlink($movie_image_path);
+        }
+      }
+
+      // Delete movie record
+      $sql = "DELETE FROM movie WHERE movie_Id = $movie_Id";
+      if ($conn->query($sql) === TRUE) {
+        $message = "Movie deleted successfully!";
+      } else {
+        $message = "Error deleting movie: " . $conn->error;
+      }
+    }
+  }
 }
 ?>
 
@@ -51,10 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
   <meta charset="UTF-8" />
   <title>ANIMAPLEX Dashboard</title>
   <link rel="stylesheet" href="admindash.css" />
-  <style>
-    /* You can keep your existing CSS file admindash.css and add the below if needed */
-    /* Or just keep your current CSS as you shared previously */
-  </style>
 </head>
 <body>
 
@@ -65,7 +106,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
     <a data-section="messages">Messages</a>
     <a data-section="users">Users</a>
     <a data-section="movies">Movies</a>
-    <a href="login.php" class="logout-button">Logout</a>
+    <a href="login.php" class="logout-button">◀️Logout</a>
   </nav>
 </div>
 
@@ -74,6 +115,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 <div id="orders">
   <h1>Orders</h1>
   <input type="text" class="section-search" placeholder="Search orders...">
+  <div id="delete">
+  <form method="POST">
+  <button type="submit" name="delete_cancelled">Delete Cancelled Orders</button>
+</form>
+</div>
   <table>
     <thead>
       <tr>
@@ -84,9 +130,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
         <th>Booking Date</th>
         <th>Booking Time</th>
         <th>Seats</th>
-        <th>Tickets</th>
         <th>Status</th>
         <th>Total Price</th>
+        <th>Print</th>
       </tr>
     </thead>
     <tbody>
@@ -103,13 +149,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
           echo "<td>".htmlspecialchars($row['booking_date'])."</td>";
           echo "<td>".htmlspecialchars($row['booking_time'])."</td>";
           echo "<td>".htmlspecialchars($row['seats'])."</td>";
-          echo "<td>".htmlspecialchars($row['tickets'])."</td>";
           echo "<td>".htmlspecialchars($row['status'])."</td>";
           echo "<td>₱".number_format($row['totalprice'], 2)."</td>";
+
+          if ($row['status'] === 'reserved' || $row['status'] === 'paid') {
+            echo "<td><a href='print_ticket.php?orderid=".urlencode($row['orderid'])."' target='_blank' style='color:orange; font-weight:bold;'>Print Ticket</a></td>";
+          } else {
+            echo "<td style='color:orange;'>N/A</td>";
+          }
+
           echo "</tr>";
         }
       } else {
-        echo "<tr><td colspan='10'>No orders found.</td></tr>";
+        echo "<tr><td colspan='11'>No orders found.</td></tr>";
       }
       ?>
     </tbody>
@@ -206,6 +258,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
                   </select>
                   <button type='submit' name='update_status'>Update</button>
                 </form>
+  <form method='POST' onsubmit=\"return confirm('Are you sure you want to delete this movie?');\" style='margin-top:5px;'>
+    <input type='hidden' name='movie_Id' value='".htmlspecialchars($row['movie_Id'])."'>
+    <button type='submit' name='delete_movie' style='padding:4px 8px; background:darkorange; color:white; border:none; border-radius:4px; cursor:pointer;'>Delete</button>
+  </form>
               </div>";
       }
       echo "</div>";
@@ -220,13 +276,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
 <script>
 document.querySelectorAll('.sidebar nav a').forEach(link => {
   link.addEventListener('click', () => {
-    // Remove active from all links
     document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
-    // Add active to clicked link
     link.classList.add('active');
-    // Hide all sections
     document.querySelectorAll('.main > div').forEach(div => div.classList.add('hidden'));
-    // Show selected section
     const section = link.getAttribute('data-section');
     if(section){
       document.getElementById(section).classList.remove('hidden');
@@ -237,6 +289,25 @@ document.querySelectorAll('.sidebar nav a').forEach(link => {
 document.getElementById('toggleAddMovieBtn').addEventListener('click', () => {
   const formContainer = document.getElementById('addMovieFormContainer');
   formContainer.classList.toggle('hidden');
+});
+
+// Search bar filtering functionality
+document.querySelectorAll('.section-search').forEach(searchInput => {
+  searchInput.addEventListener('input', () => {
+    const section = searchInput.closest('div');
+    const filter = searchInput.value.toLowerCase();
+    const table = section.querySelector('table');
+    const rows = table.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+      const rowText = row.textContent.toLowerCase();
+      if (rowText.indexOf(filter) > -1) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
 });
 </script>
 

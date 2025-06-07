@@ -55,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $booking_date = $_POST['booking_date'];
     $booking_time = $_POST['booking_time'];
     $selectedSeats = $_POST['selected_seats'];
+    $payment_method = $_POST['payment_method'] ?? 'reserve';  // Default to reserve if not set
 
     if (empty($selectedSeats)) {
         $error = "Please select at least one seat.";
@@ -76,6 +77,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $error = "The following seats are already booked: " . implode(", ", $bookedAlready);
         } else {
             $finalPricePerSeat = $ticket_price - ($ticket_price * $discountRate);
+            // Payment status based on payment method
+            $status = ($payment_method === 'online') ? 'paid' : 'reserved';
+
             foreach ($seatsArray as $seat) {
                 do {
                     $ticketcode = generateTicketID();
@@ -85,12 +89,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     $checkResult = $check->get_result();
                 } while ($checkResult->num_rows > 0);
 
-                $insert = $conn->prepare("INSERT INTO orders (ticket_code, title, username, booking_date, booking_time, seats, tickets, status, totalprice) VALUES (?, ?, ?, ?, ?, ?, 1, 'reserved', ?)");
-                $insert->bind_param("ssssssd", $ticketcode, $movie['Title'], $username, $booking_date, $booking_time, $seat, $finalPricePerSeat);
+                $insert = $conn->prepare("INSERT INTO orders (ticket_code, title, username, booking_date, booking_time, seats, tickets, status, totalprice) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?)");
+                $insert->bind_param("sssssssd", $ticketcode, $movie['Title'], $username, $booking_date, $booking_time, $seat, $status, $finalPricePerSeat);
                 $insert->execute();
             }
 
-            echo "<script>alert('Booking confirmed for seats: $selectedSeats'); window.location='dashboard.php';</script>";
+            $paymentMsg = $payment_method === 'online' ? "Payment successful. " : "Seats reserved. Please pay at the counter.";
+
+            echo "<script>alert('Booking confirmed for seats: $selectedSeats. $paymentMsg'); window.location='dashboard.php';</script>";
             exit();
         }
     }
@@ -159,6 +165,14 @@ if ($selected_date && $selected_time) {
                 <p style="color: green;"><strong>Senior Discount: 20% off</strong></p>
             <?php endif; ?>
             <p><strong>Total Price:</strong> ₱<span id="totalPrice"><?php echo $ticket_price; ?></span></p>
+
+            <!-- New Payment Method Selection -->
+            <label>Payment Method:</label>
+            <select name="payment_method" id="payment_method" required>
+                <option value="">Select payment method</option>
+                <option value="online">Online Payment</option>
+                <option value="reserve">Reserve (Pay Later)</option>
+            </select>
 
             <button type="button" onclick="openSeatMap()" class="seat-btn">Select Seats</button>
             <button type="submit" class="book-btn">Confirm Booking</button>
@@ -241,5 +255,6 @@ function toggleSeat(seatNumber) {
     disableBookedSeats();
 }
 </script>
+
 </body>
 </html>

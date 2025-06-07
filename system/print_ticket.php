@@ -29,15 +29,7 @@ if (isset($_GET['orderid'])) {
 <head>
   <meta charset="UTF-8">
   <title>Ticket #<?php echo htmlspecialchars($row['ticket_code']); ?></title>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .ticket { border: 2px dashed #333; padding: 20px; width: 300px; margin: auto; }
-    h2 { text-align: center; }
-    .details { margin-top: 20px; }
-    .details p { margin: 5px 0; }
-    .print-btn { margin-top: 20px; text-align: center; }
-    .print-btn button { padding: 8px 16px; font-size: 16px; }
-  </style>
+  <link rel="stylesheet" href="ticket.css">
 </head>
 <body>
 
@@ -49,7 +41,6 @@ if (isset($_GET['orderid'])) {
     <p><strong>Booking Date:</strong> <?php echo htmlspecialchars($row['booking_date']); ?></p>
     <p><strong>Time:</strong> <?php echo htmlspecialchars($row['booking_time']); ?></p>
     <p><strong>Seats:</strong> <?php echo htmlspecialchars($row['seats']); ?></p>
-    <p><strong>Total Price:</strong> ₱<?php echo number_format($row['totalprice'], 2); ?></p>
   </div>
   <div class="print-btn">
     <button onclick="window.print()">Print Ticket</button>

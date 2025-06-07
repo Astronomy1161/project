@@ -1,0 +1,53 @@
+<?php
+$conn = new mysqli("localhost", "root", "", "system", 3306, "/data/data/com.termux/files/usr/var/run/mysqld.sock");
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+$message = "";
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+  // ADD MOVIE
+  if (!isset($_POST['update_status']) && !isset($_POST['delete_cancelled']) && !isset($_POST['delete_movie'])) {
+    $Title = $_POST['Title'] ?? '';
+    $Genre = $_POST['Genre'] ?? '';
+    $Overview = $_POST['Overview'] ?? '';
+
+    if (isset($_FILES['movie_image']) && $_FILES['movie_image']['error'] === UPLOAD_ERR_OK) {
+      $movie_image = $_FILES['movie_image']['name'];
+      $target_dir = "uploads/";
+      $target_file = $target_dir . basename($movie_image);
+
+      if (move_uploaded_file($_FILES["movie_image"]["tmp_name"], $target_file)) {
+        $sql = "INSERT INTO movie (Movie, Title, Genre, Overview) VALUES (?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssss", $movie_image, $Title, $Genre, $Overview);
+        if ($stmt->execute()) {
+          $message = "New movie added successfully!";
+        } else {
+          $message = "Error: " . $stmt->error;
+        }
+        $stmt->close();
+      } else {
+        $message = "Error uploading movie image.";
+      }
+    } else {
+      $message = "Please upload a movie image.";
+    }
+  }
+if (isset($_POST['update_status'])) {
+    $movie_Id = $_POST['movie_Id'] ?? '';
+    $new_status = $_POST['new_status'] ?? '';
+    if ($movie_Id && $new_status) {
+      $sql = "UPDATE movie SET status = ? WHERE movie_Id = ?";
+      $stmt = $conn->prepare($sql);
+      $stmt->bind_param("ss", $new_status, $movie_Id);
+      if ($stmt->execute()) {
+        $message = "Status updated successfully!";
+      } else {
+        $message = "Error updating status: " . $stmt->error;
+      }
+      $stmt->close();
+    }
+  }
