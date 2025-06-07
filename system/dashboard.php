@@ -27,9 +27,10 @@ $result_coming_soon = $conn->query($sql_coming_soon);
 </head>
 <body>
 
+<!-- Navigation Bar with Dropdown Button -->
 <nav>
   <div class="dropdown">
-    <button class="dropbtn">&#9776;</button> 
+    <button class="dropbtn">&#9776;</button> <!-- Hamburger icon -->
     <div class="dropdown-content">
       <a href="usero.php?username=<?php echo urlencode($_SESSION["username"]); ?>">My Orders</a>
       <a href="message.php">Contact Us</a>
