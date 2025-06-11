@@ -8,7 +8,24 @@ $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-  // ADD MOVIE
+
+  // UPDATE ORDER STATUS
+if (isset($_POST['update_order_btn'])) {
+  $orderid = intval($_POST['orderid']);
+  $new_order_status = $_POST['update_order_status'] ?? '';
+
+  if ($orderid > 0 && $new_order_status) {
+    $sql = "UPDATE orders SET status = ? WHERE orderid = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $new_order_status, $orderid);
+    if ($stmt->execute()) {
+      $message = "Order status updated successfully!";
+    } else {
+      $message = "Error updating order status: " . $stmt->error;
+    }
+    $stmt->close();
+  }
+}
   if (!isset($_POST['update_status']) && !isset($_POST['delete_cancelled']) && !isset($_POST['delete_movie'])) {
     $Title = $_POST['Title'] ?? '';
     $Genre = $_POST['Genre'] ?? '';
@@ -33,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = "Error uploading movie image.";
       }
     } else {
-      $message = "Please upload a movie image.";
+      $message = "";
     }
   }
 
@@ -55,10 +72,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   // DELETE CANCELLED ORDERS
-  if (isset($_POST['delete_cancelled'])) {
+     if (isset($_POST['delete_cancelled'])) {
     $sql = "DELETE FROM orders WHERE status = 'cancelled'";
     if ($conn->query($sql) === TRUE) {
-      $message = "All cancelled orders have been deleted successfully!";
+      $message = "";
     } else {
       $message = "Error deleting cancelled orders: " . $conn->error;
     }
@@ -94,13 +111,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>ANIMAPLEX Dashboard</title>
+  <title>🍿ANIMAPLEX</title>
   <link rel="stylesheet" href="admindash.css" />
 </head>
 <body>
 
 <div class="sidebar">
-  <h2>ANIMAPLEX</h2>
+  <h2>🍿ANIMAPLEX</h2>
   <nav>
     <a data-section="orders" class="active">Orders</a>
     <a data-section="messages">Messages</a>
@@ -116,10 +133,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <h1>Orders</h1>
   <input type="text" class="section-search" placeholder="Search orders...">
   <div id="delete">
-  <form method="POST">
-  <button type="submit" name="delete_cancelled">Delete Cancelled Orders</button>
-</form>
-</div>
+    <form method="POST">
+      <button type="submit" name="delete_cancelled">Delete Cancelled Orders</button>
+    </form>
+  </div>
   <table>
     <thead>
       <tr>
@@ -142,14 +159,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
           echo "<tr>";
-          echo "<td>#".$row['orderid']."</td>";
+          echo "<td>#".htmlspecialchars($row['orderid'])."</td>";
           echo "<td>".htmlspecialchars($row['username'])."</td>";
           echo "<td>".htmlspecialchars($row['ticket_code'])."</td>";
           echo "<td>".htmlspecialchars($row['title'])."</td>";
           echo "<td>".htmlspecialchars($row['booking_date'])."</td>";
           echo "<td>".htmlspecialchars($row['booking_time'])."</td>";
           echo "<td>".htmlspecialchars($row['seats'])."</td>";
-          echo "<td>".htmlspecialchars($row['status'])."</td>";
+
+          // Status with update dropdown
+          echo "<td>
+                  <form method='POST' style='display:flex; gap:5px; align-items:center;'>
+                    <input type='hidden' name='orderid' value='".htmlspecialchars($row['orderid'])."'>
+                    <select name='update_order_status'>
+                      <option value='reserved'".($row['status']=='reserved'?' selected':'').">Reserved</option>
+                      <option value='paid'".($row['status']=='paid'?' selected':'').">Paid</option>
+                      <option value='cancelled'".($row['status']=='cancelled'?' selected':'').">Cancelled</option>
+                    </select>
+                    <button type='submit' name='update_order_btn' style='padding:3px 6px; background:orange; border:none; border-radius:4px; cursor:pointer;'>Update</button>
+                  </form>
+                </td>";
+
           echo "<td>₱".number_format($row['totalprice'], 2)."</td>";
 
           if ($row['status'] === 'reserved' || $row['status'] === 'paid') {

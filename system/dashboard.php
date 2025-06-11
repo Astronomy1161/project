@@ -10,10 +10,10 @@ if ($conn->connect_error) {
   die("Connection failed: " . $conn->connect_error);
 }
 
-$sql_now_showing = "SELECT * FROM movie WHERE status = 'Now Showing' ORDER BY movie_Id DESC LIMIT 10";
+$sql_now_showing = "SELECT * FROM movie WHERE status = 'Now Showing' ORDER BY movie_Id DESC";
 $result_now_showing = $conn->query($sql_now_showing);
 
-$sql_coming_soon = "SELECT * FROM movie WHERE status = 'Coming Soon' ORDER BY movie_Id DESC LIMIT 10";
+$sql_coming_soon = "SELECT * FROM movie WHERE status = 'Coming Soon' ORDER BY movie_Id DESC";
 $result_coming_soon = $conn->query($sql_coming_soon);
 ?>
 
