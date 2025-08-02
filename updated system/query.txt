@@ -1,0 +1,33 @@
+CREATE TABLE movie (
+  movie_Id VARCHAR(255) NOT NULL PRIMARY KEY,
+  Movie VARCHAR(255) NOT NULL,
+  Title VARCHAR(255) NOT NULL,
+  Genre VARCHAR(255) NOT NULL,
+  Overview VARCHAR(255) NOT NULL,
+  status ENUM('Now Showing', 'Coming Soon') NOT NULL DEFAULT 'Coming Soon'
+);
+
+CREATE TABLE orders (
+  orderid INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  ticket_code VARCHAR(11) NOT NULL UNIQUE,
+  title VARCHAR(255) NOT NULL,
+  username VARCHAR(50) NOT NULL,
+  booking_date DATE NOT NULL,
+  booking_time TIME NOT NULL,
+  seats VARCHAR(255) NOT NULL,
+  tickets INT(11) NOT NULL,
+  status ENUM('reserved', 'confirmed', 'cancelled') NOT NULL DEFAULT 'reserved',
+  totalprice DECIMAL(10,2) NOT NULL,
+  INDEX idx_username (username),
+  INDEX idx_booking_date (booking_date),
+  INDEX idx_booking_time (booking_time)
+);
+
+CREATE TABLE users (
+  id INT(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  password VARCHAR(100) NOT NULL,
+  role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+  age INT(11) DEFAULT NULL,
+  birthday DATE DEFAULT NULL
+);
